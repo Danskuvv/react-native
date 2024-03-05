@@ -4,28 +4,40 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../views/Home';
 import Profile from '../views/Profile';
 import Single from '../views/Single';
+import Login from '../views/Login';
+import {useUserContext} from '../hooks/ContextHooks';
+import MyFiles from '../views/MyFiles';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const TabScreen = () => {
+const TabNavigator = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Settings" component={Profile} />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 };
 
-const StackScreen = () => {
+const StackNavigator = () => {
+  const {user} = useUserContext();
+
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Tabs"
-        component={TabScreen}
-        options={{headerShown: false}} // This will hide the header
-      />
-      <Stack.Screen name="Single" component={Single} />
+      {user ? (
+        <>
+          <Stack.Screen
+            name="Tabs"
+            component={TabNavigator}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen name="Single" component={Single} />
+          <Stack.Screen name="My Files" component={MyFiles} />
+        </>
+      ) : (
+        <Stack.Screen name="Login" component={Login} />
+      )}
     </Stack.Navigator>
   );
 };
@@ -33,7 +45,7 @@ const StackScreen = () => {
 const Navigator = () => {
   return (
     <NavigationContainer>
-      <StackScreen />
+      <StackNavigator />
     </NavigationContainer>
   );
 };
