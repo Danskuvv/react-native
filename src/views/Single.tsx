@@ -1,14 +1,38 @@
-import {Card, Text, ListItem, Icon} from '@rneui/themed';
+import {Card, Text, ListItem, Icon, Button} from '@rneui/themed';
 import {Video, ResizeMode} from 'expo-av';
-import {ScrollView} from 'react-native';
+import {Alert, ScrollView} from 'react-native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
 import {MediaItemWithOwner} from '../types/DBTypes';
 import Likes from '../components/Likes';
 import Comments from '../components/Comments';
+import {useMedia} from '../hooks/apiHooks';
+import {useUserContext} from '../hooks/ContextHooks';
+import {UpdateContext} from '../contexts/UpdateContext';
 
 const Single = ({route}: any) => {
+  const context = React.useContext(UpdateContext);
   const item: MediaItemWithOwner = route.params;
-  const [fileType, fileFormat] = item.media_type.split('&#x2F;');
-  item.filename = item.filename.replace('localhost', '192.168.101.141');
+  const [fileType, fileFormat] = item.media_type.split('/');
+  const {deleteMedia} = useMedia();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
+  const {user} = useUserContext();
+  /*item.filename = item.filename.replace(
+    'http://localhost',
+    'http://192.168.101.141',
+  );
+  */
+
+  if (context === null) {
+    throw new Error('UpdateContext is null');
+  }
+
+  const {update, setUpdate} = context;
 
   return (
     <ScrollView>
@@ -18,12 +42,12 @@ const Single = ({route}: any) => {
           <Card.Image
             style={{height: 400}}
             resizeMode="contain"
-            source={{uri: 'http:' + item.filename}}
+            source={{uri: item.filename}}
           />
         ) : (
           <Video
             style={{height: 400}}
-            source={{uri: 'http:' + item.filename}}
+            source={{uri: item.filename}}
             useNativeControls
             resizeMode={ResizeMode.CONTAIN}
           />
@@ -31,6 +55,48 @@ const Single = ({route}: any) => {
         <ListItem>
           <Likes item={item} />
         </ListItem>
+        {user?.user_id === item.user_id && (
+          <>
+            <ListItem>
+              <Button
+                title="Modify"
+                onPress={() => navigation.navigate('Modify', {item})}
+              />
+            </ListItem>
+            <ListItem>
+              <Button
+                title="Delete"
+                onPress={() => {
+                  console.log('test delete');
+                  Alert.alert(
+                    'Delete Media',
+                    'Are you sure you want to delete this media?',
+                    [
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'OK',
+                        onPress: async () => {
+                          const token = await AsyncStorage.getItem('token');
+                          if (token) {
+                            await deleteMedia(item.media_id, token);
+                            navigation.navigate('Home');
+                            setUpdate(!update);
+                          } else {
+                            console.error('No token found');
+                          }
+                        },
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                }}
+              />
+            </ListItem>
+          </>
+        )}
         <ListItem>
           <Text>{item.description}</Text>
         </ListItem>

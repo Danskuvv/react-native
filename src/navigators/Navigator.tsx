@@ -7,6 +7,8 @@ import Single from '../views/Single';
 import Login from '../views/Login';
 import {useUserContext} from '../hooks/ContextHooks';
 import MyFiles from '../views/MyFiles';
+import Upload from '../views/Upload';
+import Modify from '../views/Modify';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -16,6 +18,7 @@ const TabNavigator = () => {
     <Tab.Navigator>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Upload" component={Upload} />
     </Tab.Navigator>
   );
 };
@@ -34,6 +37,7 @@ const StackNavigator = () => {
           />
           <Stack.Screen name="Single" component={Single} />
           <Stack.Screen name="My Files" component={MyFiles} />
+          <Stack.Screen name="Modify" component={Modify} />
         </>
       ) : (
         <Stack.Screen name="Login" component={Login} />

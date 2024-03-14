@@ -8,10 +8,14 @@ type Props = {
 };
 
 const MediaListItem = ({item, navigation}: Props) => {
-  const thumbnail = item.thumbnail.replace('localhost', '192.168.101.141');
+  /* const thumbnail = item.thumbnail.replace(
+    'http://localhost',
+    'http://192.168.101.141',
+  );
+  */
   return (
     <ListItem bottomDivider onPress={() => navigation.navigate('Single', item)}>
-      <Avatar source={{uri: 'http:' + thumbnail}} />
+      <Avatar source={{uri: item.thumbnail}} />
       <ListItem.Content>
         <ListItem.Title>{item.title}</ListItem.Title>
         <ListItem.Subtitle>

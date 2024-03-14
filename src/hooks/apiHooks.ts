@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import * as FileSystem from 'expo-file-system';
 import {
   Comment,
   Like,
@@ -15,15 +16,19 @@ import {
   UploadResponse,
   UserResponse,
 } from '../types/MessageTypes';
+import useUpdateContext from './UpdateHooks';
 // DONE: add necessary imports
 const useMedia = () => {
   // DONE: move mediaArray state here
   const [mediaArray, setMediaArray] = useState<MediaItemWithOwner[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const {update} = useUpdateContext();
 
   // DONE: move getMedia function here
   // DONE: move useEffect here
 
   const getMediaWithOwners = async () => {
+    setLoading(true);
     try {
       const mediaItems = await fetchData<MediaItem[]>(
         `${process.env.EXPO_PUBLIC_MEDIA_API}/media`,
@@ -40,12 +45,14 @@ const useMedia = () => {
       setMediaArray(result);
     } catch (error) {
       console.error('getMediaWithOwners', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getMediaWithOwners();
-  }, []);
+  }, [update]);
 
   const postMedia = async (
     file: UploadResponse,
@@ -79,7 +86,51 @@ const useMedia = () => {
     // TODO: return the data
   };
 
-  return {mediaArray, postMedia};
+  const putMedia = async (
+    media_id: number,
+    inputs: Record<string, string>,
+    token: string,
+  ) => {
+    const media: Partial<MediaItem> = {
+      title: inputs.title,
+      description: inputs.description,
+    };
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify(media),
+    };
+    return fetchData<MediaResponse>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/media/' + media_id,
+      options,
+    );
+  };
+
+  const deleteMedia = async (media_id: number, token: string) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      };
+      const response = await fetchData<MessageResponse>(
+        process.env.EXPO_PUBLIC_MEDIA_API + '/media/' + media_id,
+        options,
+      );
+      if (!response.message) {
+        throw new Error('Failed to delete media');
+      }
+      return response;
+    } catch (error) {
+      console.error('deleteMedia', error);
+    }
+  };
+
+  return {mediaArray, loading, postMedia, putMedia, deleteMedia};
 };
 
 const useAuthentication = () => {
@@ -181,7 +232,29 @@ const useFile = () => {
       options,
     );
   };
-  return {postFile};
+
+  const postExpoFile = async (
+    imageUri: string,
+    token: string,
+  ): Promise<UploadResponse> => {
+    // TODO: display loading indicator
+    const fileResult = await FileSystem.uploadAsync(
+      process.env.EXPO_PUBLIC_UPLOAD_SERVER + '/upload',
+      imageUri,
+      {
+        httpMethod: 'POST',
+        uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+        fieldName: 'file',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      },
+    );
+    // TODO: hide loading indicator
+    return fileResult.body ? JSON.parse(fileResult.body) : null;
+  };
+
+  return {postFile, postExpoFile};
 };
 
 const useLike = () => {
