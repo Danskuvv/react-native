@@ -74,8 +74,9 @@ En tiedä mistä johtuu, kaikki keinot on testattu. Ei ole omasta koodista kiinn
 
 Referenssit, käytetyt tutoriaalit, grafiikkakirjastot, tms.:
 - Aika monta artikkelia ja muutama youtube video.
+- Monta eri react native kirjastoa, mukaanlukien graafisia kirjastoja kuten vektori ikonit jne.
 - Tiedostot tallennettu AWS S3 buckettiin.
-- Käytetty aws s3 yhteyden luomisessa apuna AWS docseja.
+- Käytetty AWS S3 yhteyden luomisessa apuna AWS docseja.
 - API:t hostattu [Render.com sivustolla.](https://render.com)
 - Database hostattu [Freesql sivustolla](https://www.freesqldatabase.com)
 
