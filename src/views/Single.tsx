@@ -1,13 +1,20 @@
-import {Card, Text, ListItem, Icon, Button} from '@rneui/themed';
+import {Card, Text, ListItem, Icon} from '@rneui/themed';
 import {Video, ResizeMode} from 'expo-av';
-import {Alert, ScrollView} from 'react-native';
+import {Alert, Image, ScrollView, TouchableOpacity} from 'react-native';
 import {
   NavigationProp,
   ParamListBase,
   useNavigation,
 } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import React, {useState} from 'react';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {MediaItemWithOwner} from '../types/DBTypes';
 import Likes from '../components/Likes';
 import Comments from '../components/Comments';
@@ -22,6 +29,7 @@ const Single = ({route}: any) => {
   const {deleteMedia} = useMedia();
   const navigation: NavigationProp<ParamListBase> = useNavigation();
   const {user} = useUserContext();
+  const [isMuted, setIsMuted] = useState(false);
   /*item.filename = item.filename.replace(
     'http://localhost',
     'http://192.168.101.141',
@@ -38,35 +46,19 @@ const Single = ({route}: any) => {
     <ScrollView>
       <Card>
         <Card.Title>{item.title}</Card.Title>
-        {fileType === 'image' ? (
-          <Card.Image
-            style={{height: 400}}
-            resizeMode="contain"
-            source={{uri: item.filename}}
-          />
-        ) : (
-          <Video
-            style={{height: 400}}
-            source={{uri: item.filename}}
-            useNativeControls
-            resizeMode={ResizeMode.CONTAIN}
-          />
-        )}
-        <ListItem>
-          <Likes item={item} />
-        </ListItem>
-        {user?.user_id === item.user_id && (
-          <>
-            <ListItem>
-              <Button
-                title="Modify"
-                onPress={() => navigation.navigate('Modify', {item})}
+        {user?.user_id === item.user_id ? (
+          <Menu>
+            <MenuTrigger style={{alignSelf: 'flex-end', marginTop: -60}}>
+              <Text style={{fontSize: 30}}>...</Text>
+            </MenuTrigger>
+            <MenuOptions>
+              <MenuOption
+                onSelect={() => navigation.navigate('Modify', {item})}
+                text="Modify"
               />
-            </ListItem>
-            <ListItem>
-              <Button
-                title="Delete"
-                onPress={() => {
+              <MenuOption
+                text="Delete"
+                onSelect={async () => {
                   console.log('test delete');
                   Alert.alert(
                     'Delete Media',
@@ -94,12 +86,44 @@ const Single = ({route}: any) => {
                   );
                 }}
               />
-            </ListItem>
+            </MenuOptions>
+          </Menu>
+        ) : null}
+        {fileType === 'image' ? (
+          <Image
+            style={{height: 243, width: '100%'}}
+            resizeMode="contain"
+            source={{uri: item.filename}}
+          />
+        ) : (
+          <>
+            <Video
+              style={{height: 400}}
+              source={{uri: item.filename}}
+              useNativeControls
+              resizeMode={ResizeMode.CONTAIN}
+              isMuted={isMuted}
+              shouldPlay={true}
+            />
+            <TouchableOpacity
+              style={{alignSelf: 'flex-end', marginRight: 10, marginTop: 10}}
+              onPress={() => setIsMuted(!isMuted)}
+            >
+              <FontAwesomeIcon
+                name={isMuted ? 'volume-off' : 'volume-up'}
+                size={30}
+                color="#841584"
+              />
+            </TouchableOpacity>
           </>
         )}
         <ListItem>
           <Text>{item.description}</Text>
         </ListItem>
+        <ListItem>
+          <Likes item={item} />
+        </ListItem>
+
         <ListItem>
           <Icon name="today" />
           <Text>{new Date(item.created_at).toLocaleString('fi-FI')}</Text>

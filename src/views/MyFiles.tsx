@@ -22,6 +22,7 @@ const MyFiles = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
     <>
       <FlatList
         data={myMedia}
+        style={{padding: 10}}
         renderItem={({item}) => (
           <MediaListItem navigation={navigation} item={item} />
         )}

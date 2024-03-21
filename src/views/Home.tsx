@@ -20,10 +20,10 @@ const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
 
   return (
     <>
-      <Header
-        centerComponent={{text: 'Home', style: {color: '#fff', fontSize: 20}}}
-      />
       <ScrollView>
+        <Header
+          centerComponent={{text: 'Home', style: {color: '#fff', fontSize: 20}}}
+        />
         {mediaArray.map((item) => (
           <MediaListItem
             key={item.media_id}
