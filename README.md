@@ -5,6 +5,7 @@ Testikäyttäjätunnukset:
 Voit myös luoda oman käyttäjätunnuksen.
 
 kuvakaappaukset sovelluksen käyttöliittymästä:
+
 ![image](https://github.com/Danskuvv/react-native/assets/111982581/6042e2df-82e9-40cf-9550-28921fd3c4cb)
 ![image](https://github.com/Danskuvv/react-native/assets/111982581/76e94a8b-36e5-4af6-9512-633d3aaae99c)
 ![image](https://github.com/Danskuvv/react-native/assets/111982581/6170c1c8-5034-43c5-bebc-13cd96490895)
@@ -28,13 +29,13 @@ Sovelluksen käyttöönottoohjeet:
 5. suorita npm start projektin root kansiossa. (Ongelmien sattuessa voit kokeilla "npm run tunnel" tai "npm run web"(rajoitettu toiminnallisuus)).
 6. Skannaa qr koodi, tai kirjoita ip manuaalisesti. Voit myös painaa "a", jos android laite on yhdistetty USB:llä ja usb vianetsintä on laitettu päälle androidin järjestelmäasetuksista.
 
-Backend APIt:
+Backend API:t :
 
 Media-api: https://media-api-71zl.onrender.com/api/v1 | https://github.com/Danskuvv/media-api
 
 Auth-api: https://auth-api-07r2.onrender.com/api/v1 | https://github.com/Danskuvv/auth-api
 
-Upload-api: https://upload-api-idxk.onrender.com | https://github.com/Danskuvv/upload-api
+Upload-api: https://upload-api-idxk.onrender.com/api/v1 | https://github.com/Danskuvv/upload-api
 
 
 linkki API-dokumentaatioon (apidoc) (Puuttuu vielä, työn alla)
@@ -64,7 +65,7 @@ listaus ja kuvaus kaikista toiminnallisuuksista, mitä olet toteuttanut
 
 Tiedossa olevat bugit/ongelmat:
 
--Tiedostojen poisto on hajalla.
+-Tiedostojen poisto on rikki.
 
 -Joskus AUTH-API:ssa ja MEDIA-API:ssa on ongelma (ECONNRESET), joka vaatii uudelleen kirjautumisen, tai muutaman kirjautumisyrityksen. Ei ikinä tapahtunut lokaalisti, joten todennäköisesti ongelma Render hostauksen puolella. Yleensä korjautuu sillä, että kokeilee kirjautua esim olemattomilla tunnuksilla, ja sitten spammii kirjautumisnappia muutaman kerran oikeilla tunnuksilla. Silloin menee läpi.
 
